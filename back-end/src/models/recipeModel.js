@@ -1,12 +1,22 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Configure seu sequelize aqui
-const User = require('./user'); // Importe o modelo de User se necessário
+const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../database/db.config');
+const moment = require('moment');
 
-const Recipe = sequelize.define('Recipe', {
+class Recipe extends Model {}
+
+Recipe.init({
     RecipeID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
+    },
+    UserID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Users',
+            key: 'UserID'
+        }
     },
     RecipeName: {
         type: DataTypes.STRING(100),
@@ -21,19 +31,24 @@ const Recipe = sequelize.define('Recipe', {
     Instructions: {
         type: DataTypes.TEXT
     },
+    Time: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     CreatedAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: () => moment().format('YYYY-MM-DD HH:mm:ss')
     },
     UpdatedAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+        defaultValue: () => moment().format('YYYY-MM-DD HH:mm:ss'),
         onUpdate: DataTypes.NOW
     }
+}, {
+    sequelize,
+    modelName: 'Recipe',
+    tableName: 'Recipes', // Nome correto da tabela no banco de dados
+    timestamps: false // Se deseja usar timestamps automáticos do Sequelize
 });
-
-// Relacionamento com User (opcional se não estiver usando relacionamentos no Sequelize)
-Recipe.belongsTo(User, { foreignKey: 'UserID' });
-User.hasMany(Recipe, { foreignKey: 'UserID' });
 
 module.exports = Recipe;

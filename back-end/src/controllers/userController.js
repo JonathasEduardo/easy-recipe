@@ -19,22 +19,28 @@ const createUser = async (req, res) => {
   }
 };
 
-const getAll = async (req_, res) => {
+const getAll = async (req, res) => {
   try {
     const users = await userService.getAll();
     return res.status(200).json(users);
   } catch (error) {
-    console.log("error) ", error);
+    console.log("error ", error);
     res.status(500).json({ message: "An error has occurred" });
   }
 };
+
 const updateUser = async (req, res) => {
   try {
     const userVerified = putUserSchema.parse(req.body);
     const { username, email, password } = userVerified;
-    const { id } = req.params;
+    const { UserID } = req.params; // Certifique-se de que este nome corresponde ao nome usado na rota
+
+    if (!UserID) {
+      return res.status(400).json({ message: "O ID do usuário é obrigatório" });
+    }
+
     const updatedUser = await userService.updateUser(
-      id,
+      UserID,
       username,
       email,
       password
@@ -43,7 +49,7 @@ const updateUser = async (req, res) => {
     if (!updatedUser)
       return res.status(404).json({ message: "Usuario não encontrado" });
 
-    return res.status(200).json({ message: "Usuario atualizdo com sucesso" });
+    return res.status(200).json({ message: "Usuario atualizado com sucesso" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Ocorreu um erro" });
@@ -52,8 +58,8 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    await userService.deleteUser(id);
+    const { UserID } = req.params;
+    await userService.deleteUser(UserID);
     return res.status(200).json({ message: "Usuario deletado com sucesso" });
   } catch (error) {
     console.log(error);

@@ -30,6 +30,10 @@ module.exports = {
       Instructions: {
         type: Sequelize.TEXT
       },
+      Time: {
+        type: Sequelize.INTEGER,
+        allowNull: false // ou true se a coluna puder ser nula
+      },
       CreatedAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW

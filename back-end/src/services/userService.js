@@ -1,10 +1,15 @@
-const { where } = require("sequelize");
-const { userModel } = require("../models/userModel");
 const User = require("../models/userModel");
+const moment = require('moment');
 
 const createUser = async (username, email, password) => {
   try {
-    const newUser = await User.create({ username, email, password });
+    const newUser = await User.create({
+      username,
+      email,
+      password,
+      createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+      lastLogin: moment().format('YYYY-MM-DD HH:mm:ss')
+    });
     return newUser;
   } catch (error) {
     console.log(error);
@@ -13,18 +18,24 @@ const createUser = async (username, email, password) => {
 
 const getAll = async () => {
   try {
-    const newUser = await User.findAll();
-    return newUser;
+    const users = await User.findAll();
+    return users;
   } catch (error) {
     console.log(error);
   }
 };
 
-const updateUser = async (id, username, email, password) => {
+const updateUser = async (UserID, username, email, password) => {
   try {
     const [updatedUser] = await User.update(
-      { username, email, password },
-      { where: { id:id } }
+      { 
+        username, 
+        email, 
+        password, 
+        createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+        lastLogin: moment().format('YYYY-MM-DD HH:mm:ss')
+      },
+      { where: { UserID } }
     );
     console.log("updatedUser ", updatedUser);
     return updatedUser;
@@ -32,10 +43,9 @@ const updateUser = async (id, username, email, password) => {
     console.log("error ", error);
   }
 };
-
-const deleteUser = async (id) => {
+const deleteUser = async (UserID) => {
   try {
-    const user = await User.destroy({ where: { id:id } });
+    const user = await User.destroy({ where: { UserID } });
 
     console.log(user);
     return user;
@@ -43,6 +53,7 @@ const deleteUser = async (id) => {
     console.log("error ", error);
   }
 };
+
 module.exports = {
   getAll,
   createUser,

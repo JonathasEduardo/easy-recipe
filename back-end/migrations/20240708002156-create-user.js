@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Users', {
-      userID: {
+      id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -23,12 +23,13 @@ module.exports = {
       },
       createdAt: {
         type: Sequelize.DATE,
+        allowNull: false,
         defaultValue: Sequelize.NOW
       },
       lastLogin: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-        onUpdate: Sequelize.NOW
+        allowNull: false,
+        defaultValue: Sequelize.NOW
       }
     });
   },
