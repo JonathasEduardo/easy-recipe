@@ -6,6 +6,9 @@ const {
   putUserSchema,
 } = require("../validations/userValidator/user.put.validation");
 
+const User = require("../models/userModel");
+const bcrypt = require("bcrypt");
+
 const createUser = async (req, res) => {
   try {
     const userVerified = createUserSchema.parse(req.body);
@@ -67,9 +70,32 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await userService.authenticateUser(email, password);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
+    }
+
+    // Gera um token JWT com o ID do usuário como payload
+    const token = jwt.sign({ userId: user.UserID }, 'seuSegredoDoToken', { expiresIn: '1h' });
+
+    // Retorna o token para o cliente
+    res.status(200).json({ token });
+
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    res.status(500).json({ error: 'Erro interno ao processar login.' });
+  }
+};
+
 module.exports = {
   getAll,
   createUser,
   updateUser,
   deleteUser,
+  loginUser,
 };

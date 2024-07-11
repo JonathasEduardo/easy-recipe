@@ -12,8 +12,9 @@ function App() {
       <Container maxWidth="xs" style={{ marginTop: "15em" }}>
         <ThemeProvider theme={theme}>
           <Router>
-            <Index path="/" />
+            <FormLogin path="/" />
             <FormRegister path="/register" />
+            <Index path="/index" />
           </Router>
         </ThemeProvider>
       </Container>

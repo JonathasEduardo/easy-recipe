@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 const moment = require('moment');
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
 const createUser = async (username, email, password) => {
   try {
@@ -54,9 +56,44 @@ const deleteUser = async (UserID) => {
   }
 };
 
+const authenticateUser = async (email, password) => {
+  try {
+    // Verifica se o email foi fornecido
+    if (!email || !password) {
+      return null;
+    }
+
+    // Busca o usuário pelo email fornecido
+    const user = await User.findOne({ where: { email } });
+
+    // Se não encontrou usuário, retorna null
+    if (!user) {
+      return null;
+    }
+
+    // Verifica se a senha fornecida corresponde à senha armazenada no banco
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return null; // Senha incorreta
+    }
+
+    // Atualiza o último login do usuário (opcional)
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Retorna o usuário autenticado
+    return user;
+
+  } catch (error) {
+    console.error('Erro ao autenticar usuário:', error);
+    throw error; // Lança o erro para ser tratado no controlador
+  }
+};
 module.exports = {
   getAll,
   createUser,
   updateUser,
   deleteUser,
+  authenticateUser,
 };
